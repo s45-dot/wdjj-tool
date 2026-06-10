@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import ImageUploader from './components/ImageUploader.vue'
 import BubbleCanvas from './components/BubbleCanvas.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
 import DebugPanel from './components/DebugPanel.vue'
+import { getHealth } from './api/healthApi'
 
 const imageUrl = ref<string | null>(null)
 const sourceWidth = ref(0)
@@ -13,6 +14,24 @@ const sizeBytes = ref(0)
 const targetWidth = ref(240)
 const targetHeight = ref(80)
 const insets = ref({ top: 0, right: 0, bottom: 0, left: 0 })
+
+const backendStatus = ref<{ connected: boolean; version: string }>({
+  connected: false,
+  version: '',
+})
+
+async function checkHealth() {
+  try {
+    const res = await getHealth()
+    backendStatus.value = { connected: true, version: res.version }
+  } catch {
+    backendStatus.value = { connected: false, version: '' }
+  }
+}
+
+onMounted(() => {
+  checkHealth()
+})
 
 function onImageLoaded(payload: {
   url: string
@@ -95,6 +114,8 @@ function onInsetsChanged(newInsets: { top: number; right: number; bottom: number
         :targetWidth="targetWidth"
         :targetHeight="targetHeight"
         :insets="insets"
+        :backendConnected="backendStatus.connected"
+        :backendVersion="backendStatus.version"
       />
     </footer>
   </div>

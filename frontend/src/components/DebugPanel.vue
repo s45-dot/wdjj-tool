@@ -9,6 +9,8 @@ const props = withDefaults(defineProps<{
   targetWidth: number
   targetHeight: number
   insets: { top: number; right: number; bottom: number; left: number }
+  backendConnected: boolean
+  backendVersion: string
 }>(), {
   filename: '-',
   sourceWidth: 0,
@@ -17,6 +19,8 @@ const props = withDefaults(defineProps<{
   targetWidth: 0,
   targetHeight: 0,
   insets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+  backendConnected: false,
+  backendVersion: '',
 })
 
 const sourceCenterWidth = computed(() => props.sourceWidth - props.insets.left - props.insets.right)
@@ -71,6 +75,10 @@ const valid = computed(() => errors.value.length === 0)
       <dd>{{ sourceCenterWidth }} × {{ sourceCenterHeight }}</dd>
       <dt>目标中心区域</dt>
       <dd>{{ targetCenterWidth }} × {{ targetCenterHeight }}</dd>
+      <dt>后端状态</dt>
+      <dd :class="backendConnected ? 'connected' : 'disconnected'">
+        {{ backendConnected ? `已连接 (v${backendVersion})` : '未连接' }}
+      </dd>
       <dt>状态</dt>
       <dd :class="{ valid, invalid: !valid }">{{ valid ? '有效' : '无效' }}</dd>
     </dl>
@@ -113,6 +121,14 @@ dd {
   font-weight: 600;
 }
 .invalid {
+  color: #c62828;
+  font-weight: 600;
+}
+.connected {
+  color: #2e7d32;
+  font-weight: 600;
+}
+.disconnected {
   color: #c62828;
   font-weight: 600;
 }
