@@ -77,3 +77,29 @@ Qwen Code 连续 3 次执行超时，无法产出文件：
 
 **Resolution**:
 升级至 Code Whale 执行
+
+---
+
+### Failure #F002
+
+- **Date**: 2026-06-11 07:18
+- **Task**: T004 (C1) — 创建 Vue 3 + TypeScript + Vite 前端工程
+- **Failed Agent**: Qwen Code
+- **Reviewer**: N/A
+- **Retry Count**: 2
+- **Failure Type**: 执行超时
+
+**Failure Reason**:
+Qwen Code 两次尝试均超时：
+- Retry #1 (300s wall-time): 创建了 10/15 文件（骨架 + 核心逻辑），缺失 4 组件 + CSS。超时前未能完成全部文件。
+- Retry #2 (120s wall-time): 针对 5 个缺失文件的补充尝试，无产出。
+
+与 B1 相同模式：本地模型 30tok/s 无法在规定时间内完成多文件创建任务。
+
+**Escalation**:
+- 是否需要升级：Yes
+- 升级目标：Code Whale (DeepSeek V4 Flash)
+- 升级原因：与 B1 相同超时模式，Qwen Code 不适合多文件代码生成任务
+
+**Resolution**:
+升级至 Code Whale 执行
