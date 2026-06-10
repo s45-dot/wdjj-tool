@@ -46,4 +46,33 @@
 
 ## 失败记录
 
-*暂无失败记录 — Phase 1 开始于 2026-06-11*
+### Failure #F001
+
+- **Date**: 2026-06-11 06:58
+- **Task**: T003 (B1) — 初始化项目仓库结构
+- **Failed Agent**: Qwen Code
+- **Reviewer**: N/A（未进入审查）
+- **Retry Count**: 1
+- **Failure Type**: 执行不完整
+
+**Failure Reason**:
+Qwen Code 执行超时（180s，exit code 124）。只创建了 README.md（1/11），其余 10 个文件全部缺失。
+
+**Required Changes**:
+- 创建 .gitignore
+- 创建 docs/ARCHITECTURE.md
+- 创建 docs/PHASE_1_PLAN.md
+- 创建 docs/API_DRAFT.md
+- 创建 frontend/README.md
+- 创建 backend/README.md
+- 创建 scripts/dev_frontend.sh
+- 创建 scripts/dev_backend.sh
+- 创建 scripts/check_all.sh
+- 创建 tests/README.md
+
+**Escalation**:
+- 是否需要升级：No（仅 Retry 1/3）
+- 升级目标：N/A
+
+**Resolution**:
+待 Retry #2
