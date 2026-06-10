@@ -52,27 +52,28 @@
 - **Task**: T003 (B1) — 初始化项目仓库结构
 - **Failed Agent**: Qwen Code
 - **Reviewer**: N/A（未进入审查）
-- **Retry Count**: 1
-- **Failure Type**: 执行不完整
+- **Retry Count**: 3 (max)
+- **Failure Type**: 执行超时（3 次）
 
 **Failure Reason**:
-Qwen Code 执行超时（180s，exit code 124）。只创建了 README.md（1/11），其余 10 个文件全部缺失。
+Qwen Code 连续 3 次执行超时，无法产出文件：
+- Retry #1 (180s): 只创建了 README.md（1/11），其余 10 个文件缺失
+- Retry #2 (300s): 无任何文件产出
+- Retry #3 (180s wall-time): 无任何文件产出
+
+可能原因：本地模型 30tok/s 速度较慢，在复杂 prompt 下无法在超时前完成所有文件创建。
 
 **Required Changes**:
 - 创建 .gitignore
-- 创建 docs/ARCHITECTURE.md
-- 创建 docs/PHASE_1_PLAN.md
-- 创建 docs/API_DRAFT.md
-- 创建 frontend/README.md
-- 创建 backend/README.md
-- 创建 scripts/dev_frontend.sh
-- 创建 scripts/dev_backend.sh
-- 创建 scripts/check_all.sh
+- 创建 docs/ARCHITECTURE.md, docs/PHASE_1_PLAN.md, docs/API_DRAFT.md
+- 创建 frontend/README.md, backend/README.md
+- 创建 scripts/dev_frontend.sh, scripts/dev_backend.sh, scripts/check_all.sh
 - 创建 tests/README.md
 
 **Escalation**:
-- 是否需要升级：No（仅 Retry 1/3）
-- 升级目标：N/A
+- 是否需要升级：Yes
+- 升级目标：Code Whale (DeepSeek V4 Flash)
+- 升级原因：Qwen Code 连续 3 次超时失败，达到升级阈值
 
 **Resolution**:
-待 Retry #2
+升级至 Code Whale 执行
