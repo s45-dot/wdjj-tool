@@ -89,3 +89,27 @@ export function computeNineSlicePatches(input: NineSliceInput): NineSlicePatch[]
 
   return patches
 }
+
+/**
+ * Draw a nine-slice stretched image onto a canvas.
+ * Validates input, computes 9 patches via computeNineSlicePatches,
+ * clears the canvas, and draws each patch from source to target.
+ */
+export function drawNineSlice(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement | HTMLCanvasElement,
+  input: NineSliceInput,
+): void {
+  const patches = computeNineSlicePatches(input)
+  const { targetWidth, targetHeight } = input
+
+  ctx.clearRect(0, 0, targetWidth, targetHeight)
+
+  for (const patch of patches) {
+    ctx.drawImage(
+      image,
+      patch.source.x, patch.source.y, patch.source.w, patch.source.h,
+      patch.target.x, patch.target.y, patch.target.w, patch.target.h,
+    )
+  }
+}

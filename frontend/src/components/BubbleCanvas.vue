@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
+import { drawNineSlice, validateNineSliceInput } from '../core/nineSlice'
+import type { NineSliceInput } from '../core/types'
 
 const props = withDefaults(defineProps<{
   imageUrl?: string
@@ -17,9 +19,9 @@ const props = withDefaults(defineProps<{
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 let loadedImage: HTMLImageElement | null = null
 
-function draw() {
+function draw(): void {
   const canvas = canvasRef.value
-  if (!canvas || !props.imageUrl) return
+  if (!canvas) return
 
   const ctx = canvas.getContext('2d')
   if (!ctx) return
@@ -32,15 +34,37 @@ function draw() {
   canvas.height = h * dpr
   canvas.style.width = `${w}px`
   canvas.style.height = `${h}px`
-  ctx.scale(dpr, dpr)
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-  if (loadedImage) {
+  if (!props.imageUrl || !loadedImage) {
+    ctx.clearRect(0, 0, w, h)
+    return
+  }
+
+  const sourceW = props.sourceWidth ?? loadedImage.naturalWidth
+  const sourceH = props.sourceHeight ?? loadedImage.naturalHeight
+
+  const input: NineSliceInput = {
+    sourceWidth: sourceW,
+    sourceHeight: sourceH,
+    targetWidth: w,
+    targetHeight: h,
+    insets: props.insets,
+  }
+
+  try {
+    validateNineSliceInput(input)
+  } catch {
+    // invalid insets — fall back to stretching the full image
     ctx.clearRect(0, 0, w, h)
     ctx.drawImage(loadedImage, 0, 0, w, h)
+    return
   }
+
+  drawNineSlice(ctx, loadedImage, input)
 }
 
-function loadImage() {
+function loadImage(): void {
   if (!props.imageUrl) {
     loadedImage = null
     draw()
@@ -48,11 +72,11 @@ function loadImage() {
   }
 
   const img = new Image()
-  img.onload = () => {
+  img.onload = (): void => {
     loadedImage = img
     draw()
   }
-  img.onerror = () => {
+  img.onerror = (): void => {
     loadedImage = null
     draw()
   }
@@ -62,25 +86,26 @@ function loadImage() {
 onMounted(loadImage)
 
 watch(
-  () => [
-    props.imageUrl,
-    props.sourceWidth,
-    props.sourceHeight,
-    props.targetWidth,
-    props.targetHeight,
-    props.insets?.top,
-    props.insets?.right,
-    props.insets?.bottom,
-    props.insets?.left,
-  ],
-  () => {
-    if (props.imageUrl) {
+  () => props.imageUrl,
+  (val) => {
+    if (val) {
       loadImage()
     } else {
       loadedImage = null
       draw()
     }
   },
+)
+
+watch(
+  () => [props.sourceWidth, props.sourceHeight, props.targetWidth, props.targetHeight],
+  () => draw(),
+)
+
+watch(
+  () => props.insets,
+  () => draw(),
+  { deep: true },
 )
 </script>
 

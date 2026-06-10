@@ -161,3 +161,35 @@ Vue 3 + TypeScript + Vite 前端工程创建完成。15 个文件全部到位，
 
 **Decision**:
 APPROVED — C1 目标达成，进入 D1
+
+---
+
+### Review #R005
+
+- **Date**: 2026-06-11 07:35
+- **Task**: T005 (D1)
+- **Reviewer**: Hermes (替代审查 — Gemini 不可用)
+- **Status**: APPROVED
+- **Risk Level**: Low
+
+**Summary**:
+FastAPI 后端骨架创建完成。10 个文件全部到位，health + upload 端点实现完整，PNG 校验/5MB 限制/Pillow 验证/UUID 文件名全部正确。
+
+**Blocking Issues**: 无
+**Decision**: APPROVED — D1 目标达成
+
+---
+
+### Review #R006
+
+- **Date**: 2026-06-11 07:40
+- **Task**: T006 (E1)
+- **Reviewer**: Hermes (替代审查 — Gemini 不可用)
+- **Status**: APPROVED
+- **Risk Level**: Low
+
+**Summary**:
+九宫格核心算法完美实现。纯函数，与 DOM/Canvas/Vue 完全解耦。6/6 运行时测试通过（有效输入、非法 sourceWidth、非整数 insets、目标过小、insets 覆盖 source、幂等性）。类型与文档精确对齐（w/h）。
+
+**Blocking Issues**: 无
+**Decision**: APPROVED — E1 目标达成，进入 F1
