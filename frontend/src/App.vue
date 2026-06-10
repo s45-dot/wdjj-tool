@@ -1,27 +1,52 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import ImageUploader from './components/ImageUploader.vue'
 import BubbleCanvas from './components/BubbleCanvas.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
 import DebugPanel from './components/DebugPanel.vue'
 
-import { ref, shallowRef } from 'vue'
-import type { Rect } from './core/types'
-import { clampRect, intersectRect } from './core/rect'
+const imageUrl = ref<string | null>(null)
+const sourceWidth = ref(0)
+const sourceHeight = ref(0)
+const filename = ref('')
+const sizeBytes = ref(0)
+const targetWidth = ref(240)
+const targetHeight = ref(80)
+const insets = ref({ top: 0, right: 0, bottom: 0, left: 0 })
 
-const imageLoaded = ref(false)
-const imageDimensions = ref<Rect | null>(null)
-const insets = ref({ top: 10, right: 10, bottom: 10, left: 10 })
-const debugInfo = ref('')
+function onImageLoaded(payload: {
+  url: string
+  width: number
+  height: number
+  filename: string
+  size: number
+}) {
+  // Release previous ObjectURL
+  if (imageUrl.value) {
+    URL.revokeObjectURL(imageUrl.value)
+  }
 
-function onImageLoaded(rect: Rect) {
-  imageLoaded.value = true
-  imageDimensions.value = rect
-  debugInfo.value = `Image loaded: ${rect.width}x${rect.height}`
+  imageUrl.value = payload.url
+  sourceWidth.value = payload.width
+  sourceHeight.value = payload.height
+  filename.value = payload.filename
+  sizeBytes.value = payload.size
+
+  // Auto-set default insets to 25% of each dimension
+  insets.value = {
+    top: Math.floor(payload.height * 0.25),
+    right: Math.floor(payload.width * 0.25),
+    bottom: Math.floor(payload.height * 0.25),
+    left: Math.floor(payload.width * 0.25),
+  }
+
+  // Auto-set default target dimensions
+  targetWidth.value = Math.max(payload.width, 240)
+  targetHeight.value = Math.max(payload.height, 80)
 }
 
-function onInsetsChanged(newInsets: typeof insets.value) {
+function onInsetsChanged(newInsets: { top: number; right: number; bottom: number; left: number }) {
   insets.value = newInsets
-  debugInfo.value = `Insets updated: top=${newInsets.top}, right=${newInsets.right}, bottom=${newInsets.bottom}, left=${newInsets.left}`
 }
 </script>
 
@@ -38,8 +63,12 @@ function onInsetsChanged(newInsets: typeof insets.value) {
 
       <section class="panel panel-preview">
         <BubbleCanvas
-          v-if="imageLoaded && imageDimensions"
-          :image-dimensions="imageDimensions"
+          v-if="imageUrl"
+          :imageUrl="imageUrl"
+          :sourceWidth="sourceWidth"
+          :sourceHeight="sourceHeight"
+          :targetWidth="targetWidth"
+          :targetHeight="targetHeight"
           :insets="insets"
         />
         <div v-else class="preview-placeholder">
@@ -48,15 +77,20 @@ function onInsetsChanged(newInsets: typeof insets.value) {
       </section>
 
       <section class="panel panel-controls">
-        <InsetsPanel
-          :insets="insets"
-          @changed="onInsetsChanged"
-        />
+        <InsetsPanel @change="onInsetsChanged" />
       </section>
     </main>
 
     <footer class="app-footer">
-      <DebugPanel :info="debugInfo" />
+      <DebugPanel
+        :filename="filename"
+        :sourceWidth="sourceWidth"
+        :sourceHeight="sourceHeight"
+        :sizeBytes="sizeBytes"
+        :targetWidth="targetWidth"
+        :targetHeight="targetHeight"
+        :insets="insets"
+      />
     </footer>
   </div>
 </template>
