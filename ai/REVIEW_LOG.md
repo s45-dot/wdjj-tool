@@ -123,3 +123,41 @@ APPROVED
 
 **Decision**:
 APPROVED — B1 目标达成，进入 C1
+
+---
+
+### Review #R004
+
+- **Date**: 2026-06-11 07:22
+- **Task**: T004 (C1)
+- **Reviewer**: Hermes (替代审查 — Gemini 不可用)
+- **Status**: APPROVED
+- **Risk Level**: Low
+
+**Summary**:
+Vue 3 + TypeScript + Vite 前端工程创建完成。15 个文件全部到位，组件结构清晰，TypeScript 编译零错误，npm install 成功。默认 insets 25% 计算正确，ObjectURL 清理逻辑完整。
+
+**Blocking Issues**:
+无
+
+**Non-blocking Suggestions**:
+1. types.ts 中 Rect 使用 `width/height` 而非 `w/h` — E1 任务将统一修正
+2. nineSlice.ts 中 computeNineSlicePatches 为 stub — E1 任务将完整实现
+3. validators.ts 中 validateInsets 返回 boolean 而非 `{valid,errors,warnings}` — H1 任务将扩展
+4. ImageUploader.vue 中 resetInput 函数未使用（lint warn）— 可在 G1 清理
+5. nineSlice.ts 中 Rect 导入未使用（lint warn）— E1 实现后自然解决
+
+**Required Changes**:
+无 — 以上建议均可在后续 E1/F1/G1/H1 任务中自然修正
+
+**Scope Check**:
+- 是否存在越界实现：No
+  - 无 Router ✅
+  - 无 Pinia ✅
+  - 无 Tailwind ✅
+  - 无 Axios ✅
+  - 无复杂 UI 框架 ✅
+  - 无导出功能 ✅
+
+**Decision**:
+APPROVED — C1 目标达成，进入 D1
