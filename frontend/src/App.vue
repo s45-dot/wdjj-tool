@@ -77,7 +77,12 @@ function onInsetsChanged(newInsets: { top: number; right: number; bottom: number
       </section>
 
       <section class="panel panel-controls">
-        <InsetsPanel @change="onInsetsChanged" />
+        <InsetsPanel
+          :insets="insets"
+          :sourceWidth="sourceWidth"
+          :sourceHeight="sourceHeight"
+          @change="onInsetsChanged"
+        />
       </section>
     </main>
 

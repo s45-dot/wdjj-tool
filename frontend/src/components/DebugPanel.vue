@@ -43,10 +43,10 @@ const errors = computed(() => {
 
 const warnings = computed(() => {
   const w: string[] = []
-  if (sourceCenterWidth.value <= 0) w.push('源图片中心区域宽度为零或负值')
-  if (sourceCenterHeight.value <= 0) w.push('源图片中心区域高度为零或负值')
-  if (targetCenterWidth.value <= 0) w.push('目标图片中心区域宽度为零或负值')
-  if (targetCenterHeight.value <= 0) w.push('目标图片中心区域高度为零或负值')
+  if (sourceCenterWidth.value < 2) w.push('源图片中心区域宽度小于 2px')
+  if (sourceCenterHeight.value < 2) w.push('源图片中心区域高度小于 2px')
+  if (targetCenterWidth.value < 2) w.push('目标图片中心区域宽度小于 2px')
+  if (targetCenterHeight.value < 2) w.push('目标图片中心区域高度小于 2px')
   return w
 })
 

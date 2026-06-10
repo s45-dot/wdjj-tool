@@ -63,3 +63,31 @@ export function validateRect(rect: Rect): boolean {
 export function validateImageDimensions(dims: Rect): boolean {
   return validateRect(dims) && dims.w > 0 && dims.h > 0
 }
+
+/**
+ * Validate insets against source image dimensions with detailed result.
+ * Returns errors (fatal) and warnings (center region too small).
+ */
+export function validateInsetsResult(
+  sourceWidth: number,
+  sourceHeight: number,
+  insets: { top: number; right: number; bottom: number; left: number },
+): { valid: boolean; errors: string[]; warnings: string[] } {
+  const errors: string[] = []
+  const warnings: string[] = []
+
+  if (insets.left + insets.right >= sourceWidth) {
+    errors.push('left + right must be < sourceWidth')
+  }
+  if (insets.top + insets.bottom >= sourceHeight) {
+    errors.push('top + bottom must be < sourceHeight')
+  }
+  if (sourceWidth - insets.left - insets.right < 2) {
+    warnings.push('source center width < 2px')
+  }
+  if (sourceHeight - insets.top - insets.bottom < 2) {
+    warnings.push('source center height < 2px')
+  }
+
+  return { valid: errors.length === 0, errors, warnings }
+}

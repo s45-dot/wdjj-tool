@@ -1,33 +1,41 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { validateInsetsResult } from '../core/validators'
+
 const props = withDefaults(defineProps<{
   insets?: { top: number; right: number; bottom: number; left: number }
-  maxTop?: number
-  maxRight?: number
-  maxBottom?: number
-  maxLeft?: number
+  sourceWidth: number
+  sourceHeight: number
 }>(), {
   insets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-  maxTop: 999,
-  maxRight: 999,
-  maxBottom: 999,
-  maxLeft: 999,
+  sourceWidth: 0,
+  sourceHeight: 0,
 })
 
 const emit = defineEmits<{
   change: [insets: { top: number; right: number; bottom: number; left: number }]
 }>()
 
-const fields: { key: 'top' | 'right' | 'bottom' | 'left'; label: string; max: number }[] = [
-  { key: 'top', label: '上', max: props.maxTop },
-  { key: 'right', label: '右', max: props.maxRight },
-  { key: 'bottom', label: '下', max: props.maxBottom },
-  { key: 'left', label: '左', max: props.maxLeft },
-]
+const maxTop = computed(() => Math.max(props.sourceHeight - 1, 0))
+const maxRight = computed(() => Math.max(props.sourceWidth - 1, 0))
+const maxBottom = computed(() => Math.max(props.sourceHeight - 1, 0))
+const maxLeft = computed(() => Math.max(props.sourceWidth - 1, 0))
+
+const fields = computed(() => [
+  { key: 'top' as const, label: '上', max: maxTop.value },
+  { key: 'right' as const, label: '右', max: maxRight.value },
+  { key: 'bottom' as const, label: '下', max: maxBottom.value },
+  { key: 'left' as const, label: '左', max: maxLeft.value },
+])
+
+const validation = computed(() =>
+  validateInsetsResult(props.sourceWidth, props.sourceHeight, props.insets)
+)
 
 function update(key: 'top' | 'right' | 'bottom' | 'left', value: string) {
   const num = parseInt(value, 10)
   if (isNaN(num)) return
-  const field = fields.find(f => f.key === key)
+  const field = fields.value.find(f => f.key === key)
   const clamped = Math.max(0, Math.min(num, field?.max ?? 999))
   emit('change', { ...props.insets, [key]: clamped })
 }
@@ -60,6 +68,12 @@ function update(key: 'top' | 'right' | 'bottom' | 'left', value: string) {
         @input="update(field.key, ($event.target as HTMLInputElement).value)"
         class="num-input"
       />
+    </div>
+    <div v-if="!validation.valid" class="validation-messages">
+      <p v-for="err in validation.errors" :key="err" class="error-text">{{ err }}</p>
+    </div>
+    <div v-if="validation.warnings.length" class="validation-messages">
+      <p v-for="warn in validation.warnings" :key="warn" class="warning-text">{{ warn }}</p>
     </div>
   </div>
 </template>
@@ -101,5 +115,18 @@ input[type="range"] {
 .num-input:focus {
   outline: none;
   border-color: #1a1a2e;
+}
+.validation-messages {
+  margin-top: 0.1rem;
+}
+.validation-messages p {
+  margin: 0.15rem 0;
+  font-size: 0.8rem;
+}
+.error-text {
+  color: #c62828;
+}
+.warning-text {
+  color: #e65100;
 }
 </style>
