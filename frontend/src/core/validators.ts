@@ -35,22 +35,22 @@ export function validateInsets(insets: Insets): boolean {
 export function validateRect(rect: Rect): boolean {
   if (!rect) return false
 
-  const { x, y, width, height } = rect
+  const { x, y, w, h } = rect
 
   // All values must be numbers
   if (typeof x !== 'number' || typeof y !== 'number' ||
-      typeof width !== 'number' || typeof height !== 'number') {
+      typeof w !== 'number' || typeof h !== 'number') {
     return false
   }
 
   // Width and height must be positive
-  if (width <= 0 || height <= 0) {
+  if (w <= 0 || h <= 0) {
     return false
   }
 
   // Dimensions should not exceed reasonable bounds
   const MAX_DIMENSION = 10000
-  if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+  if (w > MAX_DIMENSION || h > MAX_DIMENSION) {
     return false
   }
 
@@ -61,5 +61,5 @@ export function validateRect(rect: Rect): boolean {
  * Validate that an image dimensions rectangle is valid
  */
 export function validateImageDimensions(dims: Rect): boolean {
-  return validateRect(dims) && dims.width > 0 && dims.height > 0
+  return validateRect(dims) && dims.w > 0 && dims.h > 0
 }
