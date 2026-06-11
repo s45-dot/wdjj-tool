@@ -11,6 +11,26 @@
 | ADR-0001 | 采用 Vue 3 + TypeScript + Vite 作为前端技术栈 | 2026-06-11 | Accepted |
 | ADR-0002 | 采用 FastAPI + Python 作为后端技术栈 | 2026-06-11 | Accepted |
 | ADR-0003 | 九宫格核心算法使用纯函数，与 Vue/Canvas/DOM 解耦 | 2026-06-11 | Accepted |
+| ADR-0004 | OpenCode (Minimax 2.7) 为 Phase 4 主力 Coder，Qwen Code 禁用 | 2026-06-11 | Accepted |
+
+---
+
+## ADR-0004：OpenCode 为第四阶段主力 Coder
+
+**日期**：2026-06-11
+**状态**：Accepted
+
+**Context**：Qwen Code 接入的本地模型暂时无法使用。OpenCode 已接入 Minimax 2.7 并验证可正常调用。
+
+**Decision**：
+- OpenCode 为 Phase 4 主力代码开发工具
+- Qwen Code 禁用，不得调用
+- Code Whale 继续作为 fallback
+- 审查链路不变
+
+**Consequences**：
+- 任务粒度可从 MICRO-only 提升到 SMALL/MEDIUM
+- Qwen Code 只能通过未来 ADR 恢复
 
 ---
 
