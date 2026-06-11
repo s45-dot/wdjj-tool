@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 .app {
   display: flex;
   flex-direction: column;
@@ -53,6 +57,40 @@
   background: #f5f5f5;
   border-top: 1px solid #ddd;
   font-size: 0.85rem;
+}
+
+/* --- Mobile: portrait-first, landscape-safe --- */
+@media (max-width: 768px) {
+  .app-main {
+    flex-direction: column;
+  }
+
+  .app-main .panel {
+    flex: none;
+    width: 100%;
+  }
+
+  .panel-preview {
+    order: -1;
+  }
+
+  button,
+  input,
+  select,
+  textarea,
+  [role="slider"],
+  input[type="range"] {
+    min-height: 44px;
+  }
+
+  .app-main {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .panel {
+    padding: 0.75rem;
+  }
 }
 
 canvas {

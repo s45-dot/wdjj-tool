@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import ImageUploader from './components/ImageUploader.vue'
 import BubbleCanvas from './components/BubbleCanvas.vue'
+import DevicePreview from './components/DevicePreview.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
 import DebugPanel from './components/DebugPanel.vue'
 import ContentInsetsPanel from './components/ContentInsetsPanel.vue'
@@ -125,15 +126,16 @@ function onContentInsetsChanged(newContentInsets: { top: number; right: number; 
       </section>
 
       <section class="panel panel-preview">
-        <BubbleCanvas
-          v-if="imageUrl"
-          :imageUrl="imageUrl"
-          :sourceWidth="sourceWidth"
-          :sourceHeight="sourceHeight"
-          :targetWidth="targetWidth"
-          :targetHeight="targetHeight"
-          :insets="insets"
-        />
+        <DevicePreview v-if="imageUrl">
+          <BubbleCanvas
+            :imageUrl="imageUrl"
+            :sourceWidth="sourceWidth"
+            :sourceHeight="sourceHeight"
+            :targetWidth="targetWidth"
+            :targetHeight="targetHeight"
+            :insets="insets"
+          />
+        </DevicePreview>
         <div v-else class="preview-placeholder">
           Upload an image to preview
         </div>
