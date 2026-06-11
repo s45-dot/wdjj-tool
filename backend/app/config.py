@@ -12,6 +12,9 @@ EXPORT_DIR = BASE_DIR / "data" / "exports"
 # Temporary directory
 TMP_DIR = BASE_DIR / "data" / "tmp"
 
+# Runtime directory (for tokens and runtime state)
+RUNTIME_DIR = BASE_DIR / "data" / "runtime"
+
 # Maximum upload size: 5 MB
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024
 
