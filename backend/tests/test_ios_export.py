@@ -164,6 +164,121 @@ class TestIosExport(unittest.TestCase):
         self.assertEqual(result["scale"], self.scale)
         self.assertEqual(result["assetName"], self.asset_name)
 
+    def test_scale_1_pt_equals_px(self):
+        """Verify pt = px when scale=1."""
+        result = build_ios_cap_insets_json(
+            self.asset_name,
+            self.image_width,
+            self.image_height,
+            scale=1,
+            cap_insets=self.cap_insets,
+            content_insets=self.content_insets,
+        )
+
+        for key in self.cap_insets:
+            self.assertEqual(
+                result["capInsetsPt"][key],
+                result["capInsetsPx"][key],
+                f"scale=1: capInsetsPt[{key}] should equal capInsetsPx[{key}]",
+            )
+
+        for key in self.content_insets:
+            self.assertEqual(
+                result["contentInsetsPt"][key],
+                result["contentInsetsPx"][key],
+                f"scale=1: contentInsetsPt[{key}] should equal contentInsetsPx[{key}]",
+            )
+
+    def test_scale_2_pt_equals_px_divided_by_2(self):
+        """Verify pt = px/2 when scale=2."""
+        result = build_ios_cap_insets_json(
+            self.asset_name,
+            self.image_width,
+            self.image_height,
+            scale=2,
+            cap_insets=self.cap_insets,
+            content_insets=self.content_insets,
+        )
+
+        for key in self.cap_insets:
+            expected_pt = self.cap_insets[key] / 2
+            self.assertEqual(
+                result["capInsetsPt"][key],
+                expected_pt,
+                f"scale=2: capInsetsPt[{key}] should be {expected_pt}",
+            )
+
+        for key in self.content_insets:
+            expected_pt = self.content_insets[key] / 2
+            self.assertEqual(
+                result["contentInsetsPt"][key],
+                expected_pt,
+                f"scale=2: contentInsetsPt[{key}] should be {expected_pt}",
+            )
+
+    def test_scale_3_pt_equals_px_divided_by_3(self):
+        """Verify pt = px/3 when scale=3."""
+        result = build_ios_cap_insets_json(
+            self.asset_name,
+            self.image_width,
+            self.image_height,
+            scale=3,
+            cap_insets=self.cap_insets,
+            content_insets=self.content_insets,
+        )
+
+        for key in self.cap_insets:
+            expected_pt = self.cap_insets[key] / 3
+            self.assertEqual(
+                result["capInsetsPt"][key],
+                expected_pt,
+                f"scale=3: capInsetsPt[{key}] should be {expected_pt}",
+            )
+
+        for key in self.content_insets:
+            expected_pt = self.content_insets[key] / 3
+            self.assertEqual(
+                result["contentInsetsPt"][key],
+                expected_pt,
+                f"scale=3: contentInsetsPt[{key}] should be {expected_pt}",
+            )
+
+    def test_invalid_scale_zero_raises_error(self):
+        """Verify scale=0 raises ValueError or ZeroDivisionError."""
+        with self.assertRaises((ValueError, ZeroDivisionError)):
+            build_ios_cap_insets_json(
+                self.asset_name,
+                self.image_width,
+                self.image_height,
+                scale=0,
+                cap_insets=self.cap_insets,
+                content_insets=self.content_insets,
+            )
+
+    def test_invalid_scale_negative_raises_error(self):
+        """Verify negative scale raises ValueError or ZeroDivisionError."""
+        with self.assertRaises((ValueError, ZeroDivisionError)):
+            build_ios_cap_insets_json(
+                self.asset_name,
+                self.image_width,
+                self.image_height,
+                scale=-1,
+                cap_insets=self.cap_insets,
+                content_insets=self.content_insets,
+            )
+
+    def test_invalid_scale_float_raises_error(self):
+        """Verify non-integer scale raises TypeError or ValueError."""
+        with self.assertRaises((TypeError, ValueError)):
+            build_ios_cap_insets_json(
+                self.asset_name,
+                self.image_width,
+                self.image_height,
+                scale=2.5,
+                cap_insets=self.cap_insets,
+                content_insets=self.content_insets,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
