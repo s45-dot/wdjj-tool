@@ -1,0 +1,12 @@
+*.md
+!README.md
+!QWEN.md
+!AGENTS.md
+
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+logs/
+tmp/

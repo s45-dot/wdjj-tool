@@ -1,19 +1,24 @@
 # AI State — Bubble Stretch Tool
 
 ## 当前阶段
-**Phase 3**：手机真实场景预览 + 局域网易用性 + 产品化打磨
+**Phase 4**：真实设备验证 + 质量稳定
+
+## 工具分工
+| 角色 | 工具 | 状态 |
+|------|------|------|
+| Primary Coder | OpenCode (Minimax 2.7) | ✅ Active |
+| Disabled | Qwen Code | ❌ 本地模型不可用 |
+| Fallback | Code Whale (DeepSeek V4 Flash) | 待机 |
+| Orchestrator | Hermes | ✅ Active |
 
 ## 当前任务
-P3-T001：更新第三阶段状态与任务板
+P4-T001：更新第四阶段状态
 
-## 关键规则
-- Qwen Code 主力（MICRO/SMALL 优先）
-- 四级审查链路：Gemini→ChatGPT→DeepSeek→Hermes
-- OpenTeam 双超 3 次降级
-- Phase 2 完成：Qwen 7/8 成功，Code Whale 修复 1 FAILED_REVIEW
+## 审查链路
+Gemini(70s) → ChatGPT(70s) → DeepSeek Web(70s) → Hermes
 
-## Phase 3 进度
+## 进度
 | 任务 | 状态 |
 |------|------|
-| P3-T001 | IN_PROGRESS |
-| P3-T002~T022 | TODO |
+| P4-T001~T002 | IN_PROGRESS |
+| P4-T003~T020 | TODO |
