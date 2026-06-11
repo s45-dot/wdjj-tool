@@ -371,3 +371,126 @@ Code Whale 使用相同规则。同一任务失败 3 次后：
 | 版本 | 日期 | 作者 | 变更 |
 |------|------|------|------|
 | 1.0.0 | 2026-06-11 | Hermes Agent | 初始版本，基于 Phase 1 开发指南 |
+| 2.0.0 | 2026-06-11 | Hermes Agent | Phase 2/3：慢速 Qwen 调度 + 四级审查链路 + OpenTeam 降级规则 |
+
+---
+
+## 11. Qwen Code 慢速模式调度规则（Phase 2+）
+
+### 11.1 背景
+
+本地 Qwen Code 模型：qwen3.6 35B A3B Apex MTP，实际速度 20-30 tokens/s。
+
+### 11.2 任务切片标准
+
+| 任务级别 | 文件数 | 行数 | 建议等待 |
+|----------|--------|------|----------|
+| MICRO | 1 | <150 | 8-12 分钟 |
+| SMALL | 1-3 | <300 | 15-25 分钟 |
+| MEDIUM | 3-5 | <500 | 30-45 分钟 |
+| LARGE | 禁止 | — | 必须拆分为 MICRO/SMALL |
+
+每个任务必须：目标单一、文件范围固定、接口签名预定义、禁止事项显式化。
+
+### 11.3 超时分级
+
+| 超时类型 | 含义 | 是否计入失败 |
+|----------|------|-------------|
+| SOFT_TIMEOUT | 生成慢或输出未完成 | ❌ 不计入 |
+| FAILED_REVIEW | 审查 REJECTED 或核心实现错误 | ✅ 计入 |
+
+SOFT_TIMEOUT 不计入 3 次失败规则。只有 FAILED_REVIEW 才计入。
+
+### 11.4 Qwen Code 优先原则
+
+Qwen Code 仍是默认代码生成主力（节省 API 费用）。不得因慢而跳过。同一任务 3 次 FAILED_REVIEW 后才升级 Code Whale。
+
+---
+
+## 12. 四级审查降级链路（Phase 2+）
+
+### 12.1 审查顺序
+
+```
+任务完成
+  → 1. Gemini Reviewer via OpenTeam (70s timeout)
+    → 返回有效结果 → 采用，结束
+    → 超时 → 进入 2
+  → 2. ChatGPT Reviewer via OpenTeam (70s timeout)
+    → 返回有效结果 → 采用，结束
+    → 超时 → 进入 3
+  → 3. DeepSeek Web Reviewer via CDP Browser (70s timeout)
+    → 返回有效结果 → 采用，结束
+    → 超时 → 进入 4
+  → 4. Hermes Reviewer（替代审查）
+```
+
+任一审查方返回有效结果即采用，不继续后续。
+
+### 12.2 审查输出格式
+
+```
+# Review Result
+Task: Px-Txxx
+Reviewer: Gemini / ChatGPT / DeepSeek Web / Hermes
+Status: APPROVED / CHANGES_REQUESTED / REJECTED
+
+## Summary
+## Blocking Issues
+## Required Changes
+## Scope Check
+## Correctness Check
+## Security Check
+## Test Check
+## Risk Level
+## Final Decision
+```
+
+### 12.3 审查记录格式
+
+必须记录：审查方尝试顺序、各超时秒数、采用哪个结果、未采用原因。
+
+---
+
+## 13. OpenTeam 双审查降级规则
+
+### 13.1 触发条件
+
+当 Gemini + ChatGPT 两个 OpenTeam 审查方 **连续 3 次** 都超时（70s 内无有效返回），触发降级。
+
+### 13.2 降级操作
+
+- 停用 OpenTeam 审查链路
+- 切换为 **Hermes + DeepSeek Web 交替审查**
+- 记录降级决策到 `ai/DECISIONS.md`
+- 后续任务不再尝试 Gemini/ChatGPT，直接使用 Hermes/DeepSeek
+
+### 13.3 恢复条件
+
+用户手动指令恢复。
+
+---
+
+## 14. 第二阶段禁止范围
+
+- ❌ 二维码访问
+- ❌ 桌面端封装
+- ❌ 数据库
+- ❌ 账号系统
+- ❌ 项目历史记录
+- ❌ 批量处理
+- ❌ 复杂聊天 UI
+- ❌ 完整设备预设系统
+- ❌ 在线云同步
+
+---
+
+## 15. 第三阶段禁止范围
+
+- ❌ 桌面端封装
+- ❌ 账号系统
+- ❌ 云同步
+- ❌ 多人协作
+- ❌ 数据库历史记录
+- ❌ 批量处理
+- ❌ 公网部署
