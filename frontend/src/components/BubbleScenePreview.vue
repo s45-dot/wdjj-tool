@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<{
   lineHeight?: number
   maxBubbleWidth?: number
   direction?: 'left' | 'right'
+  showGuides?: boolean
 }>(), {
   imageUrl: undefined,
   sourceWidth: 0,
@@ -33,6 +34,7 @@ const props = withDefaults(defineProps<{
   lineHeight: 22,
   maxBubbleWidth: 280,
   direction: 'left',
+  showGuides: false,
 })
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -157,6 +159,34 @@ function render(): void {
       ctx.fillText(layout.lines[i], contentAreaX, lineY)
     }
   }
+
+  // --- Step 7: draw guide lines ---
+  if (props.showGuides && loadedImage) {
+    ctx.save()
+
+    // Cap insets guide (red/orange dashed)
+    ctx.strokeStyle = 'rgba(220, 80, 70, 0.55)'
+    ctx.lineWidth = 1
+    ctx.setLineDash([4, 3])
+    ctx.strokeRect(
+      bubbleX + props.insets.left,
+      bubbleY + props.insets.top,
+      bubble.bubbleWidth - props.insets.left - props.insets.right,
+      bubble.bubbleHeight - props.insets.top - props.insets.bottom,
+    )
+
+    // Content insets guide (blue dashed) — different dash pattern
+    ctx.strokeStyle = 'rgba(70, 130, 220, 0.55)'
+    ctx.setLineDash([3, 4])
+    ctx.strokeRect(
+      bubbleX + props.contentInsets.left,
+      bubbleY + props.contentInsets.top,
+      bubble.bubbleWidth - props.contentInsets.left - props.contentInsets.right,
+      bubble.bubbleHeight - props.contentInsets.top - props.contentInsets.bottom,
+    )
+
+    ctx.restore()
+  }
 }
 
 onMounted(loadImage)
@@ -185,6 +215,7 @@ watch(
     props.lineHeight,
     props.maxBubbleWidth,
     props.direction,
+    props.showGuides,
   ],
   () => render(),
   { deep: true },

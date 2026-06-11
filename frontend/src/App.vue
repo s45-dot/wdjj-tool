@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ImageUploader from './components/ImageUploader.vue'
 import DevicePreview from './components/DevicePreview.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
@@ -8,10 +8,13 @@ import ContentInsetsPanel from './components/ContentInsetsPanel.vue'
 import ExportPanel from './components/ExportPanel.vue'
 import TextPreviewPanel from './components/TextPreviewPanel.vue'
 import BubbleScenePreview from './components/BubbleScenePreview.vue'
+import ScalePanel from './components/ScalePanel.vue'
+import WarningPanel from './components/WarningPanel.vue'
 import { getHealth } from './api/healthApi'
 import { getNetworkInfo } from './api/networkApi'
 import { readTokenFromUrl } from './api/client'
 import { createDefaultContentInsets } from './core/contentInsets'
+import { collectWarnings } from './core/warnings'
 
 const imageUrl = ref<string | null>(null)
 const sourceWidth = ref(0)
@@ -39,6 +42,21 @@ const backendStatus = ref<{ connected: boolean; version: string }>({
 })
 
 const lanUrl = ref<string | null>(null)
+
+// Scale state
+const scale = ref(1)
+const showGuides = ref(true)
+
+// Warning system
+const warnings = computed(() => collectWarnings(
+  !!imageUrl.value,
+  sourceWidth.value,
+  sourceHeight.value,
+  insets.value,
+  contentInsets.value,
+  scale.value,
+  backendStatus.value.connected,
+))
 
 async function checkHealth() {
   try {
@@ -166,6 +184,7 @@ function toggleDirection() {
             :lineHeight="bubbleLineHeight"
             :maxBubbleWidth="maxBubbleWidth"
             :direction="direction"
+            :showGuides="showGuides"
           />
         </DevicePreview>
         <div v-else class="preview-placeholder">
@@ -194,7 +213,20 @@ function toggleDirection() {
           <button class="direction-toggle" @click="toggleDirection">
             {{ direction === 'left' ? '← Left' : 'Right →' }}
           </button>
+          <label class="guides-toggle">
+            <input type="checkbox" v-model="showGuides" />
+            辅助线
+          </label>
         </div>
+        <hr class="panel-divider" />
+        <ScalePanel
+          :scale="scale"
+          :capInsets="insets"
+          :contentInsets="contentInsets"
+          @update:scale="scale = $event"
+        />
+        <hr class="panel-divider" />
+        <WarningPanel :warnings="warnings" />
         <hr class="panel-divider" />
         <ExportPanel
           :imageId="imageId"
@@ -219,6 +251,7 @@ function toggleDirection() {
         :insets="insets"
         :backendConnected="backendStatus.connected"
         :backendVersion="backendStatus.version"
+        :scale="scale"
       />
     </footer>
   </div>
@@ -249,6 +282,8 @@ function toggleDirection() {
 .direction-row {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
 .direction-toggle {
   padding: 0.4rem 1rem;
@@ -262,5 +297,13 @@ function toggleDirection() {
 }
 .direction-toggle:hover {
   background: #2d2d5e;
+}
+.guides-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #555;
 }
 </style>
