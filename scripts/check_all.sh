@@ -37,6 +37,21 @@ else
     echo "    Skipped (curl not installed)"
 fi
 
+# Frontend tests
+echo ""
+echo "==> Running frontend tests..."
+cd "$(dirname "$0")/../frontend"
+if npm run test > /dev/null 2>&1; then
+    echo "    Tests: PASSED"
+else
+    echo "    Tests: FAILED"
+fi
+if npm run typecheck > /dev/null 2>&1; then
+    echo "    Typecheck: PASSED"
+else
+    echo "    Typecheck: FAILED"
+fi
+
 echo ""
 echo "========================================"
 echo " Check complete."
