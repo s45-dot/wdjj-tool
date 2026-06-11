@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import ImageUploader from './components/ImageUploader.vue'
-import BubbleCanvas from './components/BubbleCanvas.vue'
 import DevicePreview from './components/DevicePreview.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
 import DebugPanel from './components/DebugPanel.vue'
 import ContentInsetsPanel from './components/ContentInsetsPanel.vue'
 import ExportPanel from './components/ExportPanel.vue'
+import TextPreviewPanel from './components/TextPreviewPanel.vue'
+import BubbleScenePreview from './components/BubbleScenePreview.vue'
 import { getHealth } from './api/healthApi'
 import { getNetworkInfo } from './api/networkApi'
 import { readTokenFromUrl } from './api/client'
@@ -23,6 +24,14 @@ const insets = ref({ top: 0, right: 0, bottom: 0, left: 0 })
 const imageId = ref<string | null>(null)
 const hasImageId = ref(false)
 const contentInsets = ref({ top: 0, right: 0, bottom: 0, left: 0 })
+
+// Chat bubble preview state
+const direction = ref<'left' | 'right'>('left')
+const previewText = ref('这是一条测试消息')
+const bubbleFontSize = ref(16)
+const bubbleLineHeight = ref(22)
+const bubbleFontFamily = ref('sans-serif')
+const maxBubbleWidth = ref(280)
 
 const backendStatus = ref<{ connected: boolean; version: string }>({
   connected: false,
@@ -108,6 +117,24 @@ function onInsetsChanged(newInsets: { top: number; right: number; bottom: number
 function onContentInsetsChanged(newContentInsets: { top: number; right: number; bottom: number; left: number }) {
   contentInsets.value = newContentInsets
 }
+
+function onTextPreviewChange(payload: {
+  text: string
+  fontSize: number
+  lineHeight: number
+  fontFamily: string
+  maxBubbleWidth: number
+}) {
+  previewText.value = payload.text
+  bubbleFontSize.value = payload.fontSize
+  bubbleLineHeight.value = payload.lineHeight
+  bubbleFontFamily.value = payload.fontFamily
+  maxBubbleWidth.value = payload.maxBubbleWidth
+}
+
+function toggleDirection() {
+  direction.value = direction.value === 'left' ? 'right' : 'left'
+}
 </script>
 
 <template>
@@ -127,13 +154,18 @@ function onContentInsetsChanged(newContentInsets: { top: number; right: number; 
 
       <section class="panel panel-preview">
         <DevicePreview v-if="imageUrl">
-          <BubbleCanvas
+          <BubbleScenePreview
             :imageUrl="imageUrl"
             :sourceWidth="sourceWidth"
             :sourceHeight="sourceHeight"
-            :targetWidth="targetWidth"
-            :targetHeight="targetHeight"
             :insets="insets"
+            :contentInsets="contentInsets"
+            :text="previewText"
+            :fontSize="bubbleFontSize"
+            :fontFamily="bubbleFontFamily"
+            :lineHeight="bubbleLineHeight"
+            :maxBubbleWidth="maxBubbleWidth"
+            :direction="direction"
           />
         </DevicePreview>
         <div v-else class="preview-placeholder">
@@ -155,6 +187,14 @@ function onContentInsetsChanged(newContentInsets: { top: number; right: number; 
           :sourceHeight="sourceHeight"
           @change="onContentInsetsChanged"
         />
+        <hr class="panel-divider" />
+        <TextPreviewPanel @change="onTextPreviewChange" />
+        <hr class="panel-divider" />
+        <div class="direction-row">
+          <button class="direction-toggle" @click="toggleDirection">
+            {{ direction === 'left' ? '← Left' : 'Right →' }}
+          </button>
+        </div>
         <hr class="panel-divider" />
         <ExportPanel
           :imageId="imageId"
@@ -205,5 +245,22 @@ function onContentInsetsChanged(newContentInsets: { top: number; right: number; 
 }
 .lan-banner a:hover {
   text-decoration: underline;
+}
+.direction-row {
+  display: flex;
+  justify-content: center;
+}
+.direction-toggle {
+  padding: 0.4rem 1rem;
+  border: 1px solid #1a1a2e;
+  border-radius: 4px;
+  background: #1a1a2e;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.direction-toggle:hover {
+  background: #2d2d5e;
 }
 </style>
