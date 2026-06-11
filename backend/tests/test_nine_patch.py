@@ -3,7 +3,7 @@
 import pytest
 from PIL import Image
 
-from backend.app.services.nine_patch import generate_nine_patch_image
+from app.services.nine_patch import generate_nine_patch_image
 
 
 @pytest.fixture

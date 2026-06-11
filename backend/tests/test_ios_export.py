@@ -1,7 +1,7 @@
 """Tests for iOS export service."""
 
 import unittest
-from backend.app.services.ios_export import build_ios_cap_insets_json
+from app.services.ios_export import build_ios_cap_insets_json
 
 
 class TestIosExport(unittest.TestCase):

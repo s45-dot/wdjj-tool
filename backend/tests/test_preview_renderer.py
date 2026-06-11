@@ -3,7 +3,7 @@
 import pytest
 from PIL import Image
 
-from backend.app.services.preview_renderer import render_nine_slice_preview
+from app.services.preview_renderer import render_nine_slice_preview
 
 
 def test_render_nine_slice_preview_dimensions():

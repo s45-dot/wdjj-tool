@@ -35,26 +35,26 @@ def generate_nine_patch_image(
     black = (0, 0, 0, 255)
 
     # Top edge: from (1+cap_insets.left, 0) to (w-cap_insets.right, 0)
-    top_start_x = 1 + cap_insets["left"]
-    top_end_x = w - cap_insets["right"]
+    top_start_x = 1 + cap_insets.get("left", 0)
+    top_end_x = w - cap_insets.get("right", 0)
     for x in range(top_start_x, top_end_x):
         result.putpixel((x, 0), black)
 
     # Left edge: from (0, 1+cap_insets.top) to (0, h-cap_insets.bottom)
-    left_start_y = 1 + cap_insets["top"]
-    left_end_y = h - cap_insets["bottom"]
+    left_start_y = 1 + cap_insets.get("top", 0)
+    left_end_y = h - cap_insets.get("bottom", 0)
     for y in range(left_start_y, left_end_y):
         result.putpixel((0, y), black)
 
     # Bottom edge: from (1+content_insets.left, h+1) to (w-content_insets.right, h+1)
-    bottom_start_x = 1 + content_insets["left"]
-    bottom_end_x = w - content_insets["right"]
+    bottom_start_x = 1 + content_insets.get("left", 0)
+    bottom_end_x = w - content_insets.get("right", 0)
     for x in range(bottom_start_x, bottom_end_x):
         result.putpixel((x, h + 1), black)
 
     # Right edge: from (w+1, 1+content_insets.top) to (w+1, h-content_insets.bottom)
-    right_start_y = 1 + content_insets["top"]
-    right_end_y = h - content_insets["bottom"]
+    right_start_y = 1 + content_insets.get("top", 0)
+    right_end_y = h - content_insets.get("bottom", 0)
     for y in range(right_start_y, right_end_y):
         result.putpixel((w + 1, y), black)
 
