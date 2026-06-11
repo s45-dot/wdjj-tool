@@ -4,7 +4,10 @@ import ImageUploader from './components/ImageUploader.vue'
 import BubbleCanvas from './components/BubbleCanvas.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
 import DebugPanel from './components/DebugPanel.vue'
+import ContentInsetsPanel from './components/ContentInsetsPanel.vue'
+import ExportPanel from './components/ExportPanel.vue'
 import { getHealth } from './api/healthApi'
+import { createDefaultContentInsets } from './core/contentInsets'
 
 const imageUrl = ref<string | null>(null)
 const sourceWidth = ref(0)
@@ -14,6 +17,9 @@ const sizeBytes = ref(0)
 const targetWidth = ref(240)
 const targetHeight = ref(80)
 const insets = ref({ top: 0, right: 0, bottom: 0, left: 0 })
+const imageId = ref<string | null>(null)
+const hasImageId = ref(false)
+const contentInsets = ref({ top: 0, right: 0, bottom: 0, left: 0 })
 
 const backendStatus = ref<{ connected: boolean; version: string }>({
   connected: false,
@@ -39,6 +45,8 @@ function onImageLoaded(payload: {
   height: number
   filename: string
   size: number
+  imageId?: string
+  uploadError?: string
 }) {
   // Release previous ObjectURL
   if (imageUrl.value) {
@@ -51,13 +59,25 @@ function onImageLoaded(payload: {
   filename.value = payload.filename
   sizeBytes.value = payload.size
 
-  // Auto-set default insets to 25% of each dimension
+  // Store imageId if upload succeeded
+  if (payload.imageId) {
+    imageId.value = payload.imageId
+    hasImageId.value = true
+  } else {
+    imageId.value = null
+    hasImageId.value = false
+  }
+
+  // Auto-set default stretch insets to 25% of each dimension
   insets.value = {
     top: Math.floor(payload.height * 0.25),
     right: Math.floor(payload.width * 0.25),
     bottom: Math.floor(payload.height * 0.25),
     left: Math.floor(payload.width * 0.25),
   }
+
+  // Auto-set default content insets from helper
+  contentInsets.value = createDefaultContentInsets(payload.width, payload.height)
 
   // Auto-set default target dimensions
   targetWidth.value = Math.max(payload.width, 240)
@@ -66,6 +86,10 @@ function onImageLoaded(payload: {
 
 function onInsetsChanged(newInsets: { top: number; right: number; bottom: number; left: number }) {
   insets.value = newInsets
+}
+
+function onContentInsetsChanged(newContentInsets: { top: number; right: number; bottom: number; left: number }) {
+  contentInsets.value = newContentInsets
 }
 </script>
 
@@ -102,6 +126,23 @@ function onInsetsChanged(newInsets: { top: number; right: number; bottom: number
           :sourceHeight="sourceHeight"
           @change="onInsetsChanged"
         />
+        <hr class="panel-divider" />
+        <ContentInsetsPanel
+          :contentInsets="contentInsets"
+          :sourceWidth="sourceWidth"
+          :sourceHeight="sourceHeight"
+          @change="onContentInsetsChanged"
+        />
+        <hr class="panel-divider" />
+        <ExportPanel
+          :imageId="imageId"
+          :capInsets="insets"
+          :contentInsets="contentInsets"
+          :targetWidth="targetWidth"
+          :targetHeight="targetHeight"
+          :sourceWidth="sourceWidth"
+          :sourceHeight="sourceHeight"
+        />
       </section>
     </main>
 
@@ -120,3 +161,11 @@ function onInsetsChanged(newInsets: { top: number; right: number; bottom: number
     </footer>
   </div>
 </template>
+
+<style scoped>
+.panel-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 0.5rem 0;
+}
+</style>
