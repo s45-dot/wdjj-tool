@@ -11,7 +11,11 @@ import BubbleScenePreview from './components/BubbleScenePreview.vue'
 import ScalePanel from './components/ScalePanel.vue'
 import WarningPanel from './components/WarningPanel.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
+import ProjectPanel from './components/ProjectPanel.vue'
+import TemplatePanel from './components/TemplatePanel.vue'
 import type { BubbleConfig } from './core/config'
+import type { ProjectFileInput, BubbleProject } from './core/projectFile'
+import type { TemplateFileInput, BubbleTemplate } from './core/templateFile'
 import { getHealth } from './api/healthApi'
 import { getNetworkInfo } from './api/networkApi'
 import { readTokenFromUrl } from './api/client'
@@ -182,6 +186,67 @@ function onConfigLoaded(config: BubbleConfig) {
   bubbleLineHeight.value = config.lineHeight
   maxBubbleWidth.value = config.maxBubbleWidth
 }
+
+// --- Project / Template file helpers ---
+
+function mimeTypeFromFilename(name: string): string {
+  if (!name) return 'image/png'
+  const ext = name.split('.').pop()?.toLowerCase()
+  switch (ext) {
+    case 'png': return 'image/png'
+    case 'jpg':
+    case 'jpeg': return 'image/jpeg'
+    case 'gif': return 'image/gif'
+    case 'webp': return 'image/webp'
+    default: return 'image/png'
+  }
+}
+
+const projectFileInput = computed<ProjectFileInput>(() => ({
+  asset: {
+    filename: filename.value,
+    width: sourceWidth.value,
+    height: sourceHeight.value,
+    mimeType: mimeTypeFromFilename(filename.value),
+  },
+  capInsets: { ...insets.value },
+  contentInsets: { ...contentInsets.value },
+  scale: scale.value,
+  preview: {
+    text: previewText.value,
+    fontSize: bubbleFontSize.value,
+    lineHeight: bubbleLineHeight.value,
+    maxBubbleWidth: maxBubbleWidth.value,
+    direction: direction.value,
+  },
+}))
+
+const templateFileInput = computed<TemplateFileInput>(() => ({
+  name: '',
+  description: '',
+  capInsets: { ...insets.value },
+  contentInsets: { ...contentInsets.value },
+  scale: scale.value,
+  direction: direction.value,
+}))
+
+function onProjectLoaded(project: BubbleProject) {
+  insets.value = { ...project.capInsets }
+  contentInsets.value = { ...project.contentInsets }
+  scale.value = project.scale
+  direction.value = project.preview.direction
+  previewText.value = project.preview.text
+  bubbleFontSize.value = project.preview.fontSize
+  bubbleLineHeight.value = project.preview.lineHeight
+  maxBubbleWidth.value = project.preview.maxBubbleWidth
+}
+
+function onTemplateLoaded(template: BubbleTemplate) {
+  insets.value = { ...template.capInsets }
+  contentInsets.value = { ...template.contentInsets }
+  scale.value = template.scale
+  direction.value = template.direction
+}
 </script>
 
 <template>
@@ -258,6 +323,16 @@ function onConfigLoaded(config: BubbleConfig) {
         <ConfigPanel
           :config="currentConfig"
           @config-loaded="onConfigLoaded"
+        />
+        <hr class="panel-divider" />
+        <ProjectPanel
+          :state="projectFileInput"
+          @project-loaded="onProjectLoaded"
+        />
+        <hr class="panel-divider" />
+        <TemplatePanel
+          :state="templateFileInput"
+          @template-loaded="onTemplateLoaded"
         />
         <hr class="panel-divider" />
         <WarningPanel :warnings="warnings" />
