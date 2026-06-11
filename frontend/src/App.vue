@@ -296,7 +296,7 @@ function onBatchExportComplete() {
 <template>
   <div class="app">
     <header class="app-header">
-      <h1>Bubble Stretch Tool</h1>
+      <h1>WDJJ Tool</h1>
     </header>
 
     <div v-if="lanUrl" class="lan-banner">

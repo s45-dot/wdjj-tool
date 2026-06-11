@@ -11,7 +11,7 @@ from app.services import network_service, token_service
 from app.services.local_log import LOG_DIR, write_log
 from app.version import VERSION
 
-app = FastAPI(title="Bubble Stretch Tool API", version=VERSION)
+app = FastAPI(title="WDJJ Tool API", version="1.0.0")
 
 # CORS – allow all origins for development
 app.add_middleware(

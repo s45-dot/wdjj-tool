@@ -1,4 +1,4 @@
-# 气泡图片九宫格拉伸工具 (Bubble Stretch Tool)
+# WDJJ Tool v1.0
 
 ## 项目目标
 
