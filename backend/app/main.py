@@ -8,8 +8,10 @@ from fastapi.staticfiles import StaticFiles
 from app.config import UPLOAD_DIR, RUNTIME_DIR
 from app.routers import health, upload, export, download, network, export_batch
 from app.services import network_service, token_service
+from app.services.local_log import LOG_DIR, write_log
+from app.version import VERSION
 
-app = FastAPI(title="Bubble Stretch Tool API", version="0.1.0")
+app = FastAPI(title="Bubble Stretch Tool API", version=VERSION)
 
 # CORS – allow all origins for development
 app.add_middleware(
@@ -108,19 +110,22 @@ else:
         f"   Run `scripts/build_frontend.sh` or use the Vite dev server.",
     )
 
-# ── Startup hook: create token & print LAN info ──────────────────────
+# ── Startup hook: create dirs, token & log startup ───────────────────
 
 
 @app.on_event("startup")
 async def startup():
-    """Generate a token (if missing) and log LAN address."""
+    """Create runtime directories, generate token, and log startup."""
     RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     if not TOKEN_PATH.exists():
         token_service.save_token(
             token_service.generate_token(),
             TOKEN_PATH,
         )
+
+    write_log("INFO", f"Bubble Stretch Tool v{VERSION} starting up")
 
     info = network_service.get_lan_address()
     print(f"🌐 Access URL: {info['url']}")

@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<{
   insets: { top: number; right: number; bottom: number; left: number }
   backendConnected: boolean
   backendVersion: string
+  version: string
   scale?: number
 }>(), {
   filename: '-',
@@ -22,6 +23,7 @@ const props = withDefaults(defineProps<{
   insets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
   backendConnected: false,
   backendVersion: '',
+  version: '',
   scale: 1,
 })
 
@@ -63,6 +65,8 @@ const valid = computed(() => errors.value.length === 0)
   <div class="debug-panel">
     <h3>调试信息</h3>
     <dl>
+      <dt>版本</dt>
+      <dd>{{ version || '-' }}</dd>
       <dt>文件名</dt>
       <dd>{{ filename || '-' }}</dd>
       <dt>源图片尺寸</dt>

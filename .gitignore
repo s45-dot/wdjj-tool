@@ -53,9 +53,13 @@ coverage/
 htmlcov/
 .pytest_cache/
 
-# Uploads (runtime data)
+# Runtime data (uploads, exports, tokens, logs)
 backend/data/uploads/*
 !backend/data/uploads/.gitkeep
+backend/data/exports/
+backend/data/tmp/
+backend/data/runtime/token.txt
+backend/data/logs/
 
 # Logs
 *.log

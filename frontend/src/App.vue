@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { VERSION } from './core/version'
 import ImageUploader from './components/ImageUploader.vue'
 import DevicePreview from './components/DevicePreview.vue'
 import InsetsPanel from './components/InsetsPanel.vue'
@@ -425,6 +426,7 @@ function onBatchExportComplete() {
         :insets="insets"
         :backendConnected="backendStatus.connected"
         :backendVersion="backendStatus.version"
+        :version="VERSION"
         :scale="scale"
       />
     </footer>
