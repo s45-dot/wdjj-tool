@@ -1,4 +1,4 @@
-# WDJJ Tool v1.0
+# WDJJ .9 Tool v1.0
 
 ## 项目目标
 
