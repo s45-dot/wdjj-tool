@@ -13,9 +13,14 @@ import WarningPanel from './components/WarningPanel.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
 import ProjectPanel from './components/ProjectPanel.vue'
 import TemplatePanel from './components/TemplatePanel.vue'
+import MultiScalePanel from './components/MultiScalePanel.vue'
+import BatchImportPanel from './components/BatchImportPanel.vue'
+import BatchTaskList from './components/BatchTaskList.vue'
+import BatchExportPanel from './components/BatchExportPanel.vue'
 import type { BubbleConfig } from './core/config'
 import type { ProjectFileInput, BubbleProject } from './core/projectFile'
 import type { TemplateFileInput, BubbleTemplate } from './core/templateFile'
+import type { BatchItem } from './core/batch'
 import { getHealth } from './api/healthApi'
 import { getNetworkInfo } from './api/networkApi'
 import { readTokenFromUrl } from './api/client'
@@ -52,6 +57,21 @@ const lanUrl = ref<string | null>(null)
 // Scale state
 const scale = ref(1)
 const showGuides = ref(true)
+
+// Multi-scale state
+const selectedScales = ref<number[]>([1])
+
+// Batch state
+const batchItems = ref<BatchItem[]>([])
+
+// Computed: exportable batch items (those with imageId and status 'uploaded')
+const exportableBatchIds = computed(() =>
+  batchItems.value
+    .filter(i => i.imageId && i.status === 'uploaded')
+    .map(i => i.imageId!)
+)
+
+const exportableCount = computed(() => exportableBatchIds.value.length)
 
 // Warning system
 const warnings = computed(() => collectWarnings(
@@ -247,6 +267,29 @@ function onTemplateLoaded(template: BubbleTemplate) {
   scale.value = template.scale
   direction.value = template.direction
 }
+
+// --- Multi-scale event handlers ---
+
+function onSelectedScalesChanged(scales: number[]) {
+  selectedScales.value = scales
+}
+
+// --- Batch event handlers ---
+
+function onBatchItemsChanged(items: BatchItem[]) {
+  batchItems.value = items
+}
+
+function onBatchItemRemoved(id: string) {
+  batchItems.value = batchItems.value.filter(i => i.id !== id)
+}
+
+function onBatchExportComplete() {
+  // Clear completed exported items
+  batchItems.value = batchItems.value.filter(
+    i => i.status !== 'exported' && i.status !== 'exporting'
+  )
+}
 </script>
 
 <template>
@@ -320,6 +363,10 @@ function onTemplateLoaded(template: BubbleTemplate) {
           @update:scale="scale = $event"
         />
         <hr class="panel-divider" />
+        <MultiScalePanel
+          @update:selectedScales="onSelectedScalesChanged"
+        />
+        <hr class="panel-divider" />
         <ConfigPanel
           :config="currentConfig"
           @config-loaded="onConfigLoaded"
@@ -345,6 +392,24 @@ function onTemplateLoaded(template: BubbleTemplate) {
           :targetHeight="targetHeight"
           :sourceWidth="sourceWidth"
           :sourceHeight="sourceHeight"
+        />
+        <hr class="panel-divider" />
+        <BatchImportPanel @batch-items="onBatchItemsChanged" />
+        <hr class="panel-divider" />
+        <BatchTaskList
+          :items="batchItems"
+          @remove="onBatchItemRemoved"
+        />
+        <hr class="panel-divider" />
+        <BatchExportPanel
+          :exportableItems="exportableCount"
+          :imageIds="exportableBatchIds"
+          :selectedScales="selectedScales"
+          :capInsets="insets"
+          :contentInsets="contentInsets"
+          :targetWidth="targetWidth"
+          :targetHeight="targetHeight"
+          @export-complete="onBatchExportComplete"
         />
       </section>
     </main>

@@ -40,14 +40,35 @@ class ExportOutputs(BaseModel):
     sourcePng: bool = True
 
 
+class BatchExportProcessingError(BaseModel):
+    """Error detail for a single image in batch export."""
+    imageId: str
+    error: str
+
+
+class BatchExportItem(BaseModel):
+    """A single image in a batch export request."""
+    imageId: str
+
+
+class BatchExportRequest(BaseModel):
+    """Request body for batch exporting multiple images."""
+    images: list[BatchExportItem]
+    selectedScales: list[int]
+    capInsets: dict[str, int]
+    contentInsets: dict[str, int]
+    preview: dict[str, int]
+
+
 class ImageExportRequest(BaseModel):
     """Request body for exporting a nine-patch image."""
     imageId: str
-    scale: int
+    scale: int = 1
     capInsets: Insets
     contentInsets: Insets
     preview: PreviewExportOptions
     outputs: ExportOutputs
+    selectedScales: list[int] | None = None
 
 
 class ExportResponse(BaseModel):

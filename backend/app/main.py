@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import UPLOAD_DIR, RUNTIME_DIR
-from app.routers import health, upload, export, download, network
+from app.routers import health, upload, export, download, network, export_batch
 from app.services import network_service, token_service
 
 app = FastAPI(title="Bubble Stretch Tool API", version="0.1.0")
@@ -25,6 +25,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(upload.router)
 app.include_router(export.router)
+app.include_router(export_batch.router)
 app.include_router(download.router)
 app.include_router(network.router)
 
