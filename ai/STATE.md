@@ -1,2 +1,2 @@
-# Phase 6: 项目保存 + 模板 + 多倍率 + 批量
+# Phase 7: 发布准备 + 文档完善 + v1.0.0
 Primary: OpenCode | Disabled: Qwen | Fallback: Code Whale
