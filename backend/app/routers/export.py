@@ -83,7 +83,8 @@ async def export_image(request: ImageExportRequest):
 
         # 7. Build Android JSON
         android_dict = build_android_json(
-            request.imageId, width, height, cap_insets, content_insets,
+            request.imageId, width, height,
+            request.scale, cap_insets, content_insets,
         )
         android_json_bytes = json.dumps(android_dict, indent=2).encode("utf-8")
 

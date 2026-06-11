@@ -51,13 +51,33 @@ def build_readme(
         f"```\n"
     )
 
+    # Helper for pt formatting
+    def fmt_pt(v: int) -> str:
+        return f"{px_to_pt(v)}pt"
+
+    # Cap insets pt values
+    cap_pt = {
+        "t": fmt_pt(cap_insets["top"]),
+        "r": fmt_pt(cap_insets["right"]),
+        "b": fmt_pt(cap_insets["bottom"]),
+        "l": fmt_pt(cap_insets["left"]),
+    }
+    content_pt = {
+        "t": fmt_pt(content_insets["top"]),
+        "r": fmt_pt(content_insets["right"]),
+        "b": fmt_pt(content_insets["bottom"]),
+        "l": fmt_pt(content_insets["left"]),
+    }
+
     # Notes section
     notes_section = (
-        f"## Notes\n\n"
-        f"- Scale: {scale}x\n"
-        f"- Image size: {image_width}×{image_height}px\n"
-        f"- Cap insets: L{cap_insets['left']} R{cap_insets['right']} T{cap_insets['top']} B{cap_insets['bottom']}px ({'L' + str(px_to_pt(cap_insets['left'])) + ' R' + str(px_to_pt(cap_insets['right'])) + ' T' + str(px_to_pt(cap_insets['top'])) + ' B' + str(px_to_pt(cap_insets['bottom']))}pt)\n"
-        f"- Content insets: L{content_insets['left']} R{content_insets['right']} T{content_insets['top']} B{content_insets['bottom']}px ({'L' + str(px_to_pt(content_insets['left'])) + ' R' + str(px_to_pt(content_insets['right'])) + ' T' + str(px_to_pt(content_insets['top'])) + ' B' + str(px_to_pt(content_insets['bottom']))}pt)\n"
+        f"## Measurements\n\n"
+        f"- **Scale**: {scale}x\n"
+        f"- **Image size**: {image_width}×{image_height}px\n"
+        f"- **Cap insets (px)**: L{cap_insets['left']} R{cap_insets['right']} T{cap_insets['top']} B{cap_insets['bottom']}px\n"
+        f"- **Cap insets (pt)**: L{cap_pt['l']} R{cap_pt['r']} T{cap_pt['t']} B{cap_pt['b']}\n"
+        f"- **Content insets (px)**: L{content_insets['left']} R{content_insets['right']} T{content_insets['top']} B{content_insets['bottom']}px\n"
+        f"- **Content insets (pt)**: L{content_pt['l']} R{content_pt['r']} T{content_pt['t']} B{content_pt['b']}\n"
     )
 
     # Combine all sections

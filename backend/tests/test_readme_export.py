@@ -33,18 +33,18 @@ class TestBuildReadme:
         assert "## Image Dimensions" in result
         assert "## Android" in result
         assert "## iOS (Swift)" in result
-        assert "## Notes" in result
+        assert "## Measurements" in result
 
         # Verify image dimensions
         assert "Width: 100px" in result
         assert "Height: 50px" in result
 
         # Verify scale
-        assert "Scale: 2x" in result
+        assert "**Scale**: 2x" in result
 
-        # Verify pt conversion (px/scale = 10/2 = 5.0)
-        assert "5.0pt" in result  # cap insets
-        assert "4.0pt" in result  # content insets (8/2)
+        # Verify pt conversion lines (px/scale = 10/2 = 5.0)
+        assert "**Cap insets (pt)**: L7.5pt R7.5pt T5.0pt B5.0pt" in result  # cap insets
+        assert "**Content insets (pt)**: L6.0pt R6.0pt T4.0pt B4.0pt" in result  # content insets (8/2)
 
         # Verify Android section (note: markdown adds **bold** markers)
         assert "**stretchX**: 15 → 84" in result
@@ -87,5 +87,5 @@ class TestBuildReadme:
         )
 
         # With scale 1, px should equal pt
-        assert "5.0pt" in result  # cap insets
-        assert "3.0pt" in result  # content insets
+        assert "**Cap insets (pt)**: L5.0pt R5.0pt T5.0pt B5.0pt" in result  # cap insets
+        assert "**Content insets (pt)**: L3.0pt R3.0pt T3.0pt B3.0pt" in result  # content insets

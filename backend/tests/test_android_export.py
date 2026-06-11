@@ -22,6 +22,7 @@ class TestBuildAndroidJson:
             asset_name=asset_name,
             image_width=image_width,
             image_height=image_height,
+            scale=2,
             cap_insets=cap_insets,
             content_insets=content_insets,
         )
@@ -30,6 +31,7 @@ class TestBuildAndroidJson:
         assert result["assetName"] == "test.9.png"
         assert result["widthPx"] == 100
         assert result["heightPx"] == 50
+        assert result["scale"] == 2
 
         # Verify stretchX calculations
         # stretchX.from = cap_insets["left"] = 15
@@ -55,6 +57,7 @@ class TestBuildAndroidJson:
             asset_name="zero.9.png",
             image_width=0,
             image_height=0,
+            scale=1,
             cap_insets={"top": 0, "right": 0, "bottom": 0, "left": 0},
             content_insets={"top": 0, "right": 0, "bottom": 0, "left": 0},
         )
@@ -72,12 +75,14 @@ class TestBuildAndroidJson:
             asset_name="single.9.png",
             image_width=1,
             image_height=1,
+            scale=1,
             cap_insets={"top": 0, "right": 0, "bottom": 0, "left": 0},
             content_insets={"top": 0, "right": 0, "bottom": 0, "left": 0},
         )
 
         assert result["widthPx"] == 1
         assert result["heightPx"] == 1
+        assert result["scale"] == 1
         assert result["stretchX"]["from"] == 0
         assert result["stretchX"]["to"] == 0  # 1 - 0 - 1
         assert result["stretchY"]["from"] == 0

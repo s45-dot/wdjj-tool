@@ -10,6 +10,8 @@ import TextPreviewPanel from './components/TextPreviewPanel.vue'
 import BubbleScenePreview from './components/BubbleScenePreview.vue'
 import ScalePanel from './components/ScalePanel.vue'
 import WarningPanel from './components/WarningPanel.vue'
+import ConfigPanel from './components/ConfigPanel.vue'
+import type { BubbleConfig } from './core/config'
 import { getHealth } from './api/healthApi'
 import { getNetworkInfo } from './api/networkApi'
 import { readTokenFromUrl } from './api/client'
@@ -153,6 +155,33 @@ function onTextPreviewChange(payload: {
 function toggleDirection() {
   direction.value = direction.value === 'left' ? 'right' : 'left'
 }
+
+// Config export/import — build current state into a BubbleConfig
+const currentConfig = computed<BubbleConfig>(() => ({
+  capInsets: insets.value,
+  contentInsets: contentInsets.value,
+  scale: scale.value,
+  targetWidth: targetWidth.value,
+  targetHeight: targetHeight.value,
+  direction: direction.value,
+  text: previewText.value,
+  fontSize: bubbleFontSize.value,
+  lineHeight: bubbleLineHeight.value,
+  maxBubbleWidth: maxBubbleWidth.value,
+}))
+
+function onConfigLoaded(config: BubbleConfig) {
+  insets.value = config.capInsets
+  contentInsets.value = config.contentInsets
+  scale.value = config.scale
+  targetWidth.value = config.targetWidth
+  targetHeight.value = config.targetHeight
+  direction.value = config.direction
+  previewText.value = config.text
+  bubbleFontSize.value = config.fontSize
+  bubbleLineHeight.value = config.lineHeight
+  maxBubbleWidth.value = config.maxBubbleWidth
+}
 </script>
 
 <template>
@@ -224,6 +253,11 @@ function toggleDirection() {
           :capInsets="insets"
           :contentInsets="contentInsets"
           @update:scale="scale = $event"
+        />
+        <hr class="panel-divider" />
+        <ConfigPanel
+          :config="currentConfig"
+          @config-loaded="onConfigLoaded"
         />
         <hr class="panel-divider" />
         <WarningPanel :warnings="warnings" />
